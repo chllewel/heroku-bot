@@ -15,6 +15,7 @@ or implied.
 from flask import Flask, request, jsonify
 from webexteamssdk import WebexTeamsAPI
 import os
+import json
 
 # get environment variables
 WT_BOT_TOKEN = os.environ['WT_BOT_TOKEN']
@@ -42,21 +43,34 @@ def index():
 @app.route('/webhook/alert/latency', methods=['POST','GET'])
 def alert_received():
     if request.method == 'POST':
+        with open("gsrCard.json","r") as f:
+            card = f.read()
+            f.close()
+        card = json.loads(card)
+
         raw_json = request.get_json()
+
         print(raw_json)
 
-        # customize the behaviour of the bot here
-        message = raw_json
+        if raw_json['eventType'] == 'ALERT_NOTIFICATION_CLEAR':
+            card['body'][0]['items'][0]['text'] = "Latency Alert Cleared!"
+            card['body'][1]['items'][0]['text'] = "ThousandEyes Alert has cleared for {ruleExpression} for {testName}".format(ruleExpression=raw_json['alert']['ruleExpression'], testName=raw_json['alert']['testName'])
+            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][2]['text'] = "Alert Triggered by {agentName} on {testTargetDescription}".format(agentName=raw_json['alert']['agents'][0]['agentName'],testTargetDescription=raw_json['alert']['testTargetDescription'][0])
+            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][4]['inlines']['text'] = raw_json['alert']['permalink']
 
-        # uncomment if you are implementing a notifier bot
-        api.messages.create(roomId=WT_ROOM_ID, markdown="```python %s ```"%message)
+            api.messages.create(roomId=WT_ROOM_ID, attachments=card)
+
+            return jsonify({'success': True})
+        elif raw_json['eventType'] == 'ALERT_NOTIFICATION_TRIGGER':
+            card['body'][1]['items'][0]['text'] = "ThousandEyes has detected {ruleExpression} for {testName}".format(ruleExpression=raw_json['alert']['ruleExpression'],testName=raw_json['alert']['testName'])
+            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][2]['text'] = "Alert Triggered by {agentName} on {testTargetDescription}".format(agentName=raw_json['alert']['agents'][0]['agentName'], testTargetDescription=raw_json['alert']['testTargetDescription'][0])
+            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][4]['inlines']['text'] = raw_json['alert']['permalink']
+
+            api.messages.create(roomId=WT_ROOM_ID, attachments=card)
 
 
-        return jsonify({'success': True})
-    else:
-        message="Test"
-        api.messages.create(roomId=WT_ROOM_ID, markdown=message)
-        return """This is the get request for the webhook"""
+            return jsonify({'success': True})
+
 
 if __name__=="__main__":
     app.run(debug=True)
