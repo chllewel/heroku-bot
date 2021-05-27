@@ -39,7 +39,7 @@ def index():
     """
 
 # defining the decorater and route registration for incoming alerts
-@app.route('/webhook/alert/latency', methods=['POST'])
+@app.route('/webhook/alert/latency', methods=['POST','GET'])
 def alert_received():
     if flask.request.method == 'POST':
         raw_json = request.get_json()
@@ -54,7 +54,9 @@ def alert_received():
 
         return jsonify({'success': True})
     else:
+        message="Test"
+        api.messages.create(roomId=WT_ROOM_ID, markdown=message)
         return """This is the get request for the webhook"""
 
 if __name__=="__main__":
-    app.run()
+    app.run(debug=True)
