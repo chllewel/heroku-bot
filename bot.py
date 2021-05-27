@@ -30,20 +30,31 @@ app = Flask(__name__)
 api = WebexTeamsAPI(access_token=WT_BOT_TOKEN)
 
 
+@app.route('/',methods=['GET'])
+def index():
+    return """
+    Hello world!
+    
+    This is a webhook receiver
+    """
+
 # defining the decorater and route registration for incoming alerts
 @app.route('/webhook/alert/latency', methods=['POST'])
 def alert_received():
-    raw_json = request.get_json()
-    print(raw_json)
+    if flask.request.method == 'POST':
+        raw_json = request.get_json()
+        print(raw_json)
 
-    # customize the behaviour of the bot here
-    message = raw_json
+        # customize the behaviour of the bot here
+        message = raw_json
 
-    # uncomment if you are implementing a notifier bot
-    api.messages.create(roomId=WT_ROOM_ID, markdown=message)
+        # uncomment if you are implementing a notifier bot
+        api.messages.create(roomId=WT_ROOM_ID, markdown=message)
 
 
-    return jsonify({'success': True})
+        return jsonify({'success': True})
+    else:
+        return """This is the get request for the webhook"""
 
 if __name__=="__main__":
     app.run()
