@@ -41,7 +41,7 @@ def index():
 # defining the decorater and route registration for incoming alerts
 @app.route('/webhook/alert/latency', methods=['POST','GET'])
 def alert_received():
-    if flask.request.method == 'POST':
+    if request.method == 'POST':
         raw_json = request.get_json()
         print(raw_json)
 
