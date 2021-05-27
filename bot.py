@@ -55,7 +55,7 @@ def alert_received():
         if raw_json['eventType'] == 'ALERT_NOTIFICATION_CLEAR':
             card['body'][0]['items'][0]['text'] = "Latency Alert Cleared!"
             card['body'][1]['items'][0]['text'] = "ThousandEyes Alert has cleared for {ruleExpression} for {testName}".format(ruleExpression=raw_json['alert']['ruleExpression'], testName=raw_json['alert']['testName'])
-            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][2]['text'] = "Alert Triggered by {agentName} on {testTargetDescription}".format(agentName=raw_json['alert']['agents'][0]['agentName'],testTargetDescription=raw_json['alert']['testTargetDescription'][0])
+            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][2]['text'] = "Alert Triggered by {agentName} on {testTargetDescription}".format(agentName=raw_json['alert']['agents'][0]['agentName'],testTargetDescription=raw_json['alert']['testTargetsDescription'][0])
             card['body'][2]['items'][0]['items'][0]['items'][0]['items'][4]['inlines']['text'] = raw_json['alert']['permalink']
 
             api.messages.create(roomId=WT_ROOM_ID, attachments=card)
@@ -63,7 +63,7 @@ def alert_received():
             return jsonify({'success': True})
         elif raw_json['eventType'] == 'ALERT_NOTIFICATION_TRIGGER':
             card['body'][1]['items'][0]['text'] = "ThousandEyes has detected {ruleExpression} for {testName}".format(ruleExpression=raw_json['alert']['ruleExpression'],testName=raw_json['alert']['testName'])
-            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][2]['text'] = "Alert Triggered by {agentName} on {testTargetDescription}".format(agentName=raw_json['alert']['agents'][0]['agentName'], testTargetDescription=raw_json['alert']['testTargetDescription'][0])
+            card['body'][2]['items'][0]['items'][0]['items'][0]['items'][2]['text'] = "Alert Triggered by {agentName} on {testTargetDescription}".format(agentName=raw_json['alert']['agents'][0]['agentName'], testTargetDescription=raw_json['alert']['testTargetsDescription'][0])
             card['body'][2]['items'][0]['items'][0]['items'][0]['items'][4]['inlines']['text'] = raw_json['alert']['permalink']
 
             api.messages.create(roomId=WT_ROOM_ID, attachments=card)
