@@ -71,6 +71,8 @@ def alert_received():
 
             return jsonify({'success': True})
 
+        return jsonify({'success': True})
+
 
 if __name__=="__main__":
     app.run(debug=True)
