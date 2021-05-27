@@ -49,7 +49,7 @@ def alert_received():
         message = raw_json
 
         # uncomment if you are implementing a notifier bot
-        api.messages.create(roomId=WT_ROOM_ID, markdown=message)
+        api.messages.create(roomId=WT_ROOM_ID, markdown="'''python %s '''"%message)
 
 
         return jsonify({'success': True})
